@@ -1,0 +1,71 @@
+version: "3.9"
+services:
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - event_network
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    restart: unless-stopped
+    env_file:
+      - settings/rabbitmq.env
+    volumes:
+      - ./scripts/setup_rabbit.sh:/setup_rabbit.sh
+      - rabbitmq_data:/var/lib/rabbitmq
+    entrypoint: sh /setup_rabbit.sh
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - event_network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    volumes:
+      - ./scripts/setup_redis.sh:/setup_redis.sh
+      - redis_data:/data
+    entrypoint: sh /setup_redis.sh
+    env_file:
+      - settings/redis.env
+    networks:
+      - event_network
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 5s
+      retries: 1
+      start_period: 10s
+
+  event_service:
+    build: .
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - redis
+    environment:
+      - UVICORN_WORKERS=2
+      - CONFIG_PATH=/app/settings/config.json
+    ports:
+      - "8000:8000"
+    networks:
+      - event_network
+    volumes:
+      - ./settings:/app/settings:ro
+
+networks:
+  event_network:
+
+
+volumes:
+  mongo_data:
+  rabbitmq_data:
+  redis_data:
