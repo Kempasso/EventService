@@ -1,3 +1,4 @@
+from functools import wraps
 from typing import Annotated
 
 from fastapi import APIRouter
@@ -43,4 +44,7 @@ async def me(
     ],
     user: CurrentUser
 ) -> MeResponse:
+    """
+    Provides information about the current user.
+    """
     return await manager.auth.get_user_info(user.user_id)

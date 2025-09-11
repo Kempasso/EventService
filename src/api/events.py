@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 from http import HTTPStatus
+from typing import Annotated
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from starlette.responses import JSONResponse
 
 from dishka.integrations.fastapi import FromDishka, DishkaRoute
@@ -17,7 +18,6 @@ from src.services.events.schemas import (
     EventCreate, EventResponse, EventListFilters, EventUpdate
 )
 from src.services.redis.service import RedisService
-
 
 router = APIRouter(
     prefix="/v1/events", tags=["events"], route_class=DishkaRoute
@@ -59,7 +59,7 @@ async def get_event(
 async def list_events(
     _: CurrentUser,
     manager: FromDishka[ServiceManager],
-    request: TableRequest[EventListFilters]
+    request: Annotated[TableRequest[EventListFilters], Query()]
 ):
     return await manager.event.list_events(request=request)
 
@@ -104,7 +104,7 @@ async def delete_event(
         user_id=str(event_data.created_by.id)
     )
     await publisher.publish(
-        event_message.model_dump(), "events.updated"
+        event_message.model_dump(), "events.deleted"
     )
     return event_data
 

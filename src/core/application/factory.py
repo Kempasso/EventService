@@ -39,7 +39,6 @@ def create(
     for router in routers:
         app.include_router(router, prefix=base_router_path)
 
-    # also add exception handlers
     setup_dishka(container, app)
     return app
 

@@ -1,5 +1,8 @@
 # TestProject — Docker Compose Deployment Guide
 
+## Linked repository (ATTENTION!)
+- NotifyService (Websocket): https://github.com/Kempasso/NotifyService
+  
 This document explains how to run the application stack with Docker Compose and describes the key API endpoints and the data they expect.
 
 The stack includes:
