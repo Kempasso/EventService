@@ -1,5 +1,6 @@
 {
   "en": {
+    "service_error": "Something went wrong",
     "EVENT_NOT_FOUND": "Event with current parameters doesn't exist",
     "USER_ALREADY_EXISTS": "User with current parameters doesn't exist",
     "INVALID_DATETIME": "Invalid datetime",
@@ -9,6 +10,7 @@
     "INVALID_CREDS": "Invalid username or password"
   },
   "ru": {
+    "service_error": "Что то пошло не так",
     "EVENT_NOT_FOUND": "Ивент с такими данными не существует",
     "USER_ALREADY_EXISTS": "Пользователь с такими данными не существует",
     "INVALID_DATETIME": "Неверная дата",

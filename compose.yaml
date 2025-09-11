@@ -56,7 +56,6 @@ services:
       - rabbitmq
       - redis
     environment:
-      - UVICORN_WORKERS=2
       - CONFIG_PATH=/app/settings/config.json
     ports:
       - "8000:8000"

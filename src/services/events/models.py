@@ -20,3 +20,8 @@ class Event(Document):
 
     class Settings:
         name = "events"
+
+class EventNotification(Document):
+    event_id: str
+    user_id: str
+    timestamp: datetime

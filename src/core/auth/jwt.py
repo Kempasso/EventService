@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 
 from fastapi import HTTPException, status
 from fastapi.security import HTTPBearer
@@ -20,7 +21,11 @@ class JWTAuthBackend:
         try:
             token = creds.credentials
             payload = jwt.decode(
-                jwt=token, key=self.secret_key, algorithms=[self.algorithm]
+                jwt=token, key=self.secret_key,
+                algorithms=[self.algorithm], options={
+                    "verify_signature": True,
+                    "verify_exp": True
+                }
             )
             return UserInfo.model_validate(payload)
 

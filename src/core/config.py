@@ -93,3 +93,4 @@ class Config(BaseConfig):
     redis: RedisConfig
     rabbit: RabbitConfig
     database: DatabaseConfig
+    messages: dict

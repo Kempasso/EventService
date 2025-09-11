@@ -65,7 +65,7 @@ class AuthService:
         self, user_id: str, **kwargs
     ) -> str:
         conf = CoreProvider().get_config()
-        access_delta = timedelta(conf.jwt.ttl_minutes * 60)
+        access_delta = timedelta(minutes=conf.jwt.ttl_minutes)
         payload = {
             "user_id": user_id,
             "exp": datetime.now(tz=timezone.utc) + access_delta,
