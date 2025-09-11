@@ -14,5 +14,11 @@ class RedisService:
         if init:
             await self.redis.expireat(name=key, when=expire_at)
 
+    async def increment_var(self, key: str):
+        return await self.redis.incr(name=key)
+
+    async def set_expire(self, key: str, expire: int):
+        await self.redis.expire(name=key, time=expire * 60)
+
     async def find_keys(self, pattern: str):
         return await self.redis.keys(pattern)

@@ -5,6 +5,7 @@ from fastapi import APIRouter
 from dishka.integrations.fastapi import DishkaRoute
 from dishka import FromComponent
 
+from src.core.application.utils import rate_limiter
 from src.core.auth.setup import CurrentUser
 from src.core.manager import ServiceManager
 from src.services.auth.schemas import (
@@ -27,6 +28,7 @@ async def register(
     return await manager.auth.create_user(request=request)
 
 @router.post("/login")
+@rate_limiter(count=3)
 async def login(
     manager: Annotated[
         ServiceManager,
