@@ -11,8 +11,8 @@ from src.services.redis.service import RedisService
 
 def rate_limiter(
     *,
-    count: int = 5,
-    minutes: int = 1,
+    count: int = 20,
+    seconds: int = 20,
 ) -> Callable[[Callable[..., Awaitable[Any]]], Callable[..., Awaitable[Any]]]:
     """
     Only for login now) I would like to make it more useful, but i have no time))
@@ -31,7 +31,7 @@ def rate_limiter(
 
                 current = await redis_service.increment_var(key)
                 if current == 1:
-                    await redis_service.set_expire(key, minutes)
+                    await redis_service.set_expire(key, seconds)
                 if current >= count:
                     return JSONResponse(content={"error": "Too Many Requests"}, status_code=429)
                 return res

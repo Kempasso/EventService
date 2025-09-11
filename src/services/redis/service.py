@@ -18,7 +18,7 @@ class RedisService:
         return await self.redis.incr(name=key)
 
     async def set_expire(self, key: str, expire: int):
-        await self.redis.expire(name=key, time=expire * 60)
+        await self.redis.expire(name=key, time=expire)
 
     async def find_keys(self, pattern: str):
         return await self.redis.keys(pattern)
