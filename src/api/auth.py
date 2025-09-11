@@ -28,7 +28,7 @@ async def register(
     return await manager.auth.create_user(request=request)
 
 @router.post("/login")
-@rate_limiter(count=3)
+@rate_limiter(count=10, minutes=1)
 async def login(
     manager: Annotated[
         ServiceManager,
