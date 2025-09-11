@@ -204,21 +204,17 @@ Events (prefix: /v1/events)
 
 - GET /v1/events/
   - Headers: Authorization: Bearer <JWT>
-  - Query/Body: Uses a typed table request. With FastAPI default behavior, send as query params or JSON depending on your client; the model is:
-  ```json
-      
-       {
-      "filters": {
-        "start_time": {"min": "<ISO-datetime>", "max": "<ISO-datetime>"},
-        "end_time":   {"min": "<ISO-datetime>", "max": "<ISO-datetime>"}
-      },
-      "order": [{"column": "start_time", "ascending": true}],
-      "page": 1,
-      "page_size": 10,
-      "sort_by": "start_time",
-      "sort_order": "asc"  // or "desc"
-    }
-     ```
+  - Query: Uses a typed table request. With FastAPI default behavior, send as query params or JSON depending on your client; the model is:
+  ```curl
+       curl -L -G 'http://127.0.0.1:8000/api/v1/events' \
+       -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjhjMjcwZjVkM2M1ZjA2ODc4MzlkM2MwIiwiZXhwIjoxNzU3NTk2Njg5fQ._-9X5sMAGnj9LYVCSMmxBkHB-reIM4LaqWH5CsWeTz4' \
+       --data-urlencode 'filters.start_time.min=2025-09-01T00:00:00Z' \
+       --data-urlencode 'filters.start_time.max=2025-09-30T23:59:59Z' \
+       --data-urlencode 'filters.end_time.min=2025-09-05T00:00:00Z' \
+       --data-urlencode 'filters.end_time.max=2025-09-20T23:59:59Z' \
+       --data-urlencode 'page=1' \
+       --data-urlencode 'page_size=10'
+  ```
   - 200 Response:
   ```json
     {
