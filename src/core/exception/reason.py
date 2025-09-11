@@ -1,0 +1,14 @@
+from enum import Enum
+
+
+class Reason(Enum):
+
+    # User reasons
+    EVENT_NOT_FOUND: str = "EVENT_NOT_FOUND"
+    USER_ALREADY_EXISTS: str = "USER_ALREADY_EXISTS"
+    INVALID_DATETIME: str = "INVALID_DATETIME"
+    USER_NOT_FOUND: str = "USER_NOT_FOUND"
+    UPPER_PASSWORD: str = "UPPER_PASSWORD"
+    CHAR_PASSWORD: str = "CHAR_PASSWORD"
+    DIGIT_PASSWORD: str = "DIGIT_PASSWORD"
+    INVALID_CREDS: str = "INVALID_CREDS"

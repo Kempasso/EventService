@@ -3,6 +3,8 @@ from typing import List, Optional
 from pydantic import BaseModel, Field, field_validator, model_validator
 from beanie import BeanieObjectId
 
+from src.core.exception.custom import UserError
+from src.core.exception.reason import Reason
 from src.core.schemas import RangeFilter
 from src.services.auth.models import User
 from src.services.auth.schemas import UserResponse
@@ -28,7 +30,7 @@ class EventCreate(BaseModel):
             if v.tzinfo is None:
                 return v.replace(tzinfo=timezone.utc)
             return v.astimezone(timezone.utc)
-        raise TypeError('Invalid datetime value')
+        raise UserError(Reason.INVALID_DATETIME)
 
     @model_validator(mode="after")
     def validate_times(self):

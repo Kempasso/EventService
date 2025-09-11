@@ -4,8 +4,12 @@ services:
     restart: unless-stopped
     ports:
       - "27017:27017"
+    env_file:
+      - settings/mongo.env
     volumes:
+      - ./scripts/setup_mongo.sh:/setup_mongo.sh
       - mongo_data:/data/db
+    entrypoint: sh /setup_mongo.sh
     networks:
       - event_network
 
@@ -37,6 +41,7 @@ services:
       - event_network
     ports:
       - "6379:6379"
+    command: uvicorn src.main:app --reload --host 0.0.0.0 --keep-alive 65 --workers 2
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s

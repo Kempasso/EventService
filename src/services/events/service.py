@@ -1,5 +1,7 @@
 import math
 from src.core.database.utils import parse_filters
+from src.core.exception.custom import UserError
+from src.core.exception.reason import Reason
 from src.core.provider import core_container
 from src.core.schemas import TableRequest, TableResponse
 from src.services.auth.models import User
@@ -25,7 +27,7 @@ class EventService:
          event_repo = await cnt.get(EventRepository)
          user = await auth_repo.get_one(where=(User.id == ObjectId(user_id)))
          if not user:
-            raise ValueError("User not found")
+            raise UserError(Reason.USER_NOT_FOUND)
          request.created_by = user
          event = await event_repo.create(**request.model_dump())
          return EventResponse(**event.model_dump())
@@ -37,7 +39,7 @@ class EventService:
             where=(Event.id == ObjectId(event_id)), fetch_links=True
          )
          if not event:
-            raise ValueError("Event not found")
+            raise UserError(Reason.EVENT_NOT_FOUND)
          return EventResponse(**event.model_dump())
 
    async def list_events(

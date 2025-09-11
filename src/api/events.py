@@ -5,7 +5,9 @@ from fastapi import APIRouter
 from dishka.integrations.fastapi import FromDishka, DishkaRoute
 
 from src.core.auth.setup import CurrentUser
-from src.core.brokers.rabbitmq import RabbitPublisher
+from src.core.brokers.rabbitmq import RabbitMqPublisher
+from src.core.exception.custom import UserError
+from src.core.exception.reason import Reason
 from src.core.manager import ServiceManager
 from src.core.schemas import TableRequest
 from src.services.events.messages import EventMessage
@@ -24,7 +26,7 @@ router = APIRouter(
 async def create_event(
     user: CurrentUser,
     manager: FromDishka[ServiceManager],
-    publisher: FromDishka[RabbitPublisher],
+    publisher: FromDishka[RabbitMqPublisher],
     request: EventCreate
 ) -> EventResponse:
     event_data = await manager.event.create_event(
@@ -37,7 +39,7 @@ async def create_event(
     )
     await publisher.publish(
         event_message.model_dump(),
-        "event.created"
+        "events.created",
     )
     return event_data
 
@@ -78,7 +80,7 @@ async def subscribe(
     event_id: str
 ):
     if not await manager.event.get_by_id(event_id):
-        raise ValueError("Event not found")
+        raise UserError(Reason.EVENT_NOT_FOUND)
 
     await manager.event.subscribe(
         user_id=user.user_id, event_id=event_id, redis=redis_service

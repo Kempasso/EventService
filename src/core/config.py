@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, Field
 from dotenv import dotenv_values
 
 
@@ -42,6 +42,7 @@ class RabbitConfig(BaseConfig):
     port: int
     user: str
     password: str
+    actions: list[str] = ["created", "updated", "deleted"]
     exchange: str = "events"
 
     @property
@@ -61,18 +62,23 @@ class RedisConfig(BaseConfig):
 class DatabaseConfig(BaseConfig):
     host: str
     port: int
-    username: str
-    password: str
-    name: str = "main"
+    user: str = Field(validation_alias="mongo_user")
+    password: str = Field(validation_alias="mongo_password")
+    db_name: str = Field(default="main", validation_alias="mongo_db")
 
     @property
     def mongo_uri(self):
-        # TODO: Сделать лог и пасс
-        return f"mongodb://{self.host}:{self.port}"
+        return f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}"
 
     @property
     def db_uri(self):
-        return f"mongodb://{self.host}:{self.port}/{self.name}"
+        return (
+            f"mongodb://{self.user}:"
+            f"{self.password}@"
+            f"{self.host}:"
+            f"{self.port}/"
+            f"{self.db_name}?authSource=admin"
+        )
 
 
 class JwtConfig(BaseConfig):
@@ -82,14 +88,8 @@ class JwtConfig(BaseConfig):
     bcrypt_rounds: int = 12
 
 
-class ServerConfig(BaseConfig):
-    uvicorn_workers: int = 2
-    keep_alive: int = 65
-
-
 class Config(BaseConfig):
     jwt: JwtConfig
     redis: RedisConfig
     rabbit: RabbitConfig
     database: DatabaseConfig
-    server: ServerConfig

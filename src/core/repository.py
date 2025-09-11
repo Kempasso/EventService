@@ -89,10 +89,7 @@ class BeanieRepository[TDoc: Document]:
         query.fetch_links = fetch_links
         docs = await query.limit(2).to_list()
         if len(docs) > 1:
-            raise ValueError(
-                f"get_unique: найдено более одного документа по фильтру {where}. "
-                "Добавь уникальный индекс или используй get_one."
-            )
+            raise ValueError(f"Invalid where: {where}")
         return docs[0] if docs else None
 
     @overload
@@ -129,7 +126,7 @@ class BeanieRepository[TDoc: Document]:
                 modified += 1 if out is not None else 0
             return modified
 
-        raise ValueError("Нужно либо where=..., либо передать документы для обновления")
+        raise ValueError("Only where or *docs supported")
 
     @overload
     async def delete(self, *docs: TDoc, soft: bool = True) -> int: ...
@@ -166,7 +163,7 @@ class BeanieRepository[TDoc: Document]:
                     out = await doc.save()
                     modified += 1 if out is not None else 0
                 return modified
-            raise ValueError("Нужно либо where=..., либо передать документы для удаления")
+            raise ValueError("Only where or *docs supported")
 
         if where is not None:
             res = await self.model_cls.find(where).delete()
@@ -178,7 +175,7 @@ class BeanieRepository[TDoc: Document]:
                 deleted += 1 if out is not None else 0
             return deleted
 
-        raise ValueError("Нужно либо where=..., либо передать документы для удаления")
+        raise ValueError("Only where or *docs supported")
 
     async def upsert_one(
         self,
@@ -214,9 +211,9 @@ class BeanieRepository[TDoc: Document]:
 
         if isinstance(ascending, (list, tuple)):
             if not isinstance(order_by, (list, tuple)):
-                raise ValueError("Iterable `ascending` требует iterable `order_by`")
+                raise ValueError("Iterable `ascending` requires iterable `order_by`")
             if len(ascending) != len(order_by):
-                raise ValueError("`ascending` и `order_by` должны быть одинаковой длины")
+                raise ValueError("`ascending` and `order_by` must be of the same length")
             pairs = zip(order_by, ascending)
         else:
             pairs = ((f, ascending) for f in order_by)

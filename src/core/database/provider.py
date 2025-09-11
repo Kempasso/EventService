@@ -32,20 +32,12 @@ class DatabaseConnectionProvider(Provider):
         self, client: AsyncIOMotorClient, conf: Config
     ) -> AsyncIOMotorDatabase:
         """ Provides a database. """
-        return client[conf.database.name]
+        return client[conf.database.db_name]
 
-    @provide(scope=Scope.REQUEST)
-    async def get_session(self) -> None:
-        """
-        Provides a database session for the application.
-        """
-        # TODO: Переделать под mongo
-        pass
 
     @provide(scope=Scope.REQUEST)
     async def get_repository[TItem](
         self, model: TItem
     ) -> BeanieRepository[TItem]:
         """ Provides a repository."""
-        # TODO: Добавить поддержку сессий
         return BeanieRepository[TItem](model)

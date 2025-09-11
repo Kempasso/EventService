@@ -3,6 +3,8 @@ from datetime import datetime, timezone, timedelta
 import bcrypt
 import jwt
 
+from src.core.exception.custom import UserError
+from src.core.exception.reason import Reason
 from src.core.provider import CoreProvider, core_container
 from src.services.auth.models import User
 from src.services.auth.repository import AuthRepository
@@ -35,7 +37,7 @@ class AuthService:
                 user = await auth_repo.create(**create_payload)
                 return UserResponse(**user.model_dump())
             except DuplicateKeyError as e:
-                raise ValueError("User already exists")
+                raise UserError(Reason.USER_ALREADY_EXISTS)
 
     async def login(self, request: LoginRequest):
         async with core_container() as cnt:
@@ -46,7 +48,7 @@ class AuthService:
             if not user or not self._verify_password(
                 plain=request.password, hashed=user.password_hash
             ):
-                raise ValueError("Invalid username or password")
+                raise UserError(Reason.INVALID_CREDS)
             return TokenResponse(
                 access_token=self.create_jwt_token(str(user.id))
             )
@@ -56,7 +58,7 @@ class AuthService:
             auth_repo = await cnt.get(AuthRepository)
             clause = (User.id == ObjectId(user_id))
             if not (user := await auth_repo.get_one(where=clause)):
-                raise ValueError("User not found")
+                raise UserError(Reason.USER_NOT_FOUND)
             return MeResponse(**user.model_dump())
 
     def create_jwt_token(
