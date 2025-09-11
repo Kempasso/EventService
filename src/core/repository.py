@@ -41,7 +41,9 @@ class BeanieRepository[TDoc: Document]:
         session: AsyncIOMotorClientSession | None = None,
     ) -> TDoc | None:
         """
-        Возвращает один документ (или None). По сути это get_many(..., limit=1)[0].
+        Return a single document matching the filter or None.
+        This is effectively equivalent to calling get_many(..., limit=1) and
+        returning the first item if present.
         """
         where = where or {}
         query = self.model_cls.find(where, session=session)
@@ -82,8 +84,9 @@ class BeanieRepository[TDoc: Document]:
         session: AsyncIOMotorClientSession | None = None,
     ) -> TDoc | None:
         """
-        Гарантирует, что результат либо 0, либо 1 документ.
-        Если найдено больше 1 — возбуждает ValueError (намекает, что нужен unique индекс).
+        Ensure the result set contains at most one document.
+        If more than one document is found, a ValueError is raised (suggesting
+        a missing unique index for the given filter).
         """
         query = self.model_cls.find(where, session=session)
         query.fetch_links = fetch_links
@@ -105,9 +108,10 @@ class BeanieRepository[TDoc: Document]:
         **values,
     ) -> int:
         """
-        Обновление:
-        - update(where=..., field=value) -> массовое обновление, возвращает число изменённых.
-        - update(doc1, doc2, ..., field=value) -> сохранит каждую переданную сущность.
+        Update documents.
+        - update(where=..., field=value): bulk update, returns the number of modified documents.
+        - update(doc1, doc2, ..., field=value): updates and saves each provided document instance.
+        Returns 0 if no values are provided.
         """
         if not values:
             return 0
@@ -117,7 +121,7 @@ class BeanieRepository[TDoc: Document]:
             return int(res.modified_count)
 
         if docs:
-            # обновляем переданные документы в памяти и .save() по каждому
+            # update provided in-memory documents and call .save() for each
             modified = 0
             for d in docs:
                 for k, v in values.items():
@@ -139,18 +143,18 @@ class BeanieRepository[TDoc: Document]:
         soft: bool = True,
     ) -> int:
         """
-        Удаление:
-        - soft=True: выставляет deleted_at (если поле есть), иначе бросает исключение.
-        - soft=False: физическое удаление.
-        Возвращает число затронутых документов.
+        Delete documents.
+        - soft=True: performs a soft delete by setting the deleted_at field (if present) to current UTC time; raises AttributeError if the model lacks a deleted_at field.
+        - soft=False: performs a physical delete.
+        Returns the number of affected documents.
         """
         if soft:
             if not hasattr(self.model_cls, "deleted_at"):
                 raise AttributeError(
-                    f"{self.model_cls.__name__} не содержит поля deleted_at — "
-                    "мягкое удаление невозможно"
+                    f"{self.model_cls.__name__} does not contain 'deleted_at' field — "
+                    "soft delete is not possible"
                 )
-            tz = timezone.utc  # Mongo хранит naive/aware — решай единообразно
+            tz = timezone.utc  # Use consistent timezone awareness for Mongo
             if where is not None:
                 res = await self.model_cls.find(where).update_many(
                     Set({"deleted_at": datetime.now(tz)})

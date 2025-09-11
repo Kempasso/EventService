@@ -9,7 +9,7 @@ from src.services.auth.repository import AuthRepository
 from src.services.events.models import Event
 from src.services.events.repository import EventRepository
 from src.services.events.schemas import (
-   EventCreate, EventResponse, EventListFilters
+   EventCreate, EventResponse, EventListFilters, EventUpdate
 )
 
 from bson import ObjectId
@@ -41,6 +41,30 @@ class EventService:
          if not event:
             raise UserError(Reason.EVENT_NOT_FOUND)
          return EventResponse(**event.model_dump())
+
+   async def update_by_id(self, event_id: str, request: EventUpdate) -> EventResponse:
+      async with core_container() as cnt:
+         event_repo = await cnt.get(EventRepository)
+         await event_repo.update(
+            where=(Event.id == ObjectId(event_id)),
+            **request.model_dump(exclude_none=True)
+         )
+         event = await event_repo.get_one(
+            where=(Event.id == ObjectId(event_id)), fetch_links=True
+         )
+         return EventResponse(**event.model_dump())
+
+   async def delete_by_id(self, event_id: str) -> EventResponse:
+      async with core_container() as cnt:
+         event_repo = await cnt.get(EventRepository)
+         event = await event_repo.get_one(
+            where=(Event.id == ObjectId(event_id))
+         )
+         if not event:
+            raise UserError(Reason.EVENT_NOT_FOUND)
+         response = EventResponse(**event.model_dump())
+         await event_repo.delete(event)
+         return response
 
    async def list_events(
        self, request: TableRequest[EventListFilters]

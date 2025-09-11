@@ -1,0 +1,12 @@
+{
+  "rabbit": "settings/rabbitmq.env",
+  "redis": "settings/redis.env",
+  "messages": "data/lang.json",
+  "database": "settings/mongo.env",
+  "jwt": {
+    "secret_key": "dev-secret-change",
+    "algorithm": "HS256",
+    "ttl_minutes": 30,
+    "bcrypt_rounds": 12
+  }
+}

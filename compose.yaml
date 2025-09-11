@@ -41,7 +41,6 @@ services:
       - event_network
     ports:
       - "6379:6379"
-    command: uvicorn src.main:app --reload --host 0.0.0.0 --keep-alive 65 --workers 2
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
@@ -59,6 +58,7 @@ services:
       - CONFIG_PATH=/app/settings/config.json
     ports:
       - "8000:8000"
+    command: uvicorn src.main:app --reload --host 0.0.0.0 --timeout-keep-alive 65 --workers 2
     networks:
       - event_network
     volumes:
@@ -66,7 +66,7 @@ services:
 
 networks:
   event_network:
-
+    name: event_network
 
 volumes:
   mongo_data:

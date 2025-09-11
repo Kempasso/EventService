@@ -41,6 +41,9 @@ class EventCreate(BaseModel):
             raise ValueError("start/end time cannot be in the past")
         return self
 
+class EventUpdate(BaseModel):
+    title: Optional[str] = None
+    status: Optional[EventStatus] = None
 
 class EventResponse(BaseModel):
     id: BeanieObjectId
