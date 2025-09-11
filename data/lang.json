@@ -1,0 +1,20 @@
+{
+  "en": {
+    "EVENT_NOT_FOUND": "Event with current parameters doesn't exist",
+    "USER_ALREADY_EXISTS": "User with current parameters doesn't exist",
+    "INVALID_DATETIME": "Invalid datetime",
+    "UPPER_PASSWORD": "Password must contain an uppercase letter",
+    "CHAR_PASSWORD": "Password must contain a special character",
+    "DIGIT_PASSWORD": "Password must contain a digit",
+    "INVALID_CREDS": "Invalid username or password"
+  },
+  "ru": {
+    "EVENT_NOT_FOUND": "Ивент с такими данными не существует",
+    "USER_ALREADY_EXISTS": "Пользователь с такими данными не существует",
+    "INVALID_DATETIME": "Неверная дата",
+    "UPPER_PASSWORD": "Пароль должен содержать заглавные буквы",
+    "CHAR_PASSWORD": "Пароль должен содержать специальные символы",
+    "DIGIT_PASSWORD": "Пароль должен содержать цифры",
+    "INVALID_CREDS": "Неверный логин или пароль"
+  }
+}
