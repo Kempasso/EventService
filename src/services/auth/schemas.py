@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field, field_serializer
+from pydantic import BaseModel, EmailStr, Field, field_serializer, field_validator
 from beanie import BeanieObjectId
 
 from src.core.exception.custom import UserError
@@ -26,8 +26,9 @@ class RegisterRequest(BaseModel):
             return v.lower()
         return v
 
-    @field_serializer("password")
-    def check_password(self, v):
+    @field_validator("password", mode="before")
+    @classmethod
+    def check_password(cls, v):
         if not any(c.isupper() for c in v):
             raise UserError(Reason.UPPER_PASSWORD)
         if not any(c.isdigit() for c in v):

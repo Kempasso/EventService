@@ -2,7 +2,7 @@
   "en": {
     "service_error": "Something went wrong",
     "EVENT_NOT_FOUND": "Event with current parameters doesn't exist",
-    "USER_ALREADY_EXISTS": "User with current parameters doesn't exist",
+    "USER_ALREADY_EXISTS": "User with current parameters already exist",
     "INVALID_DATETIME": "Invalid datetime",
     "UPPER_PASSWORD": "Password must contain an uppercase letter",
     "CHAR_PASSWORD": "Password must contain a special character",
@@ -12,7 +12,7 @@
   "ru": {
     "service_error": "Что то пошло не так",
     "EVENT_NOT_FOUND": "Ивент с такими данными не существует",
-    "USER_ALREADY_EXISTS": "Пользователь с такими данными не существует",
+    "USER_ALREADY_EXISTS": "Пользователь с такими данными уже существует",
     "INVALID_DATETIME": "Неверная дата",
     "UPPER_PASSWORD": "Пароль должен содержать заглавные буквы",
     "CHAR_PASSWORD": "Пароль должен содержать специальные символы",
